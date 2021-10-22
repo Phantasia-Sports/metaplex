@@ -1,3 +1,4 @@
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   CheckCircleTwoTone,
   LoadingOutlined,
@@ -17,7 +18,6 @@ import {
 import { useWallet } from '@solana/wallet-adapter-react';
 import { Connection } from '@solana/web3.js';
 import { Badge, Popover, List } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { closePersonalEscrow } from '../../actions/closePersonalEscrow';
 import { decommAuctionManagerAndReturnPrizes } from '../../actions/decommAuctionManagerAndReturnPrizes';
@@ -320,18 +320,20 @@ export function useSettlementAuctions({
               metadataByAuction,
               undefined,
             );
-            await settle(
-              connection,
-              wallet,
-              completeAuctionView,
-              // Just claim all bidder pots
-              bidsToClaim,
-              myPayingAccount?.pubkey,
-              accountByMint,
-            );
-            if (wallet.publicKey) {
-              const ata = await getPersonalEscrowAta(wallet);
-              if (ata) await closePersonalEscrow(connection, wallet, ata);
+            if(completeAuctionView) {
+              await settle(
+                connection,
+                wallet,
+                completeAuctionView,
+                // Just claim all bidder pots
+                bidsToClaim,
+                myPayingAccount?.pubkey,
+                accountByMint,
+              );
+              if (wallet.publicKey) {
+                const ata = await getPersonalEscrowAta(wallet);
+                if (ata) await closePersonalEscrow(connection, wallet, ata);
+              }
             }
           } catch (e) {
             console.error(e);
@@ -350,6 +352,7 @@ export function Notifications() {
     store,
     vaults,
     safetyDepositBoxesByVaultAndIndex,
+    pullAllSiteData,
   } = useMeta();
   const possiblyBrokenAuctionManagerSetups = useAuctions(
     AuctionViewState.Defective,
@@ -404,6 +407,26 @@ export function Notifications() {
         return true;
       },
     });
+  });
+
+  notifications.push({
+    id: 'none',
+    title: 'Search for other auctions.',
+    description: (
+      <span>
+        Load all auctions (including defectives) by pressing here. Then you can
+        close them.
+      </span>
+    ),
+    action: async () => {
+      try {
+        await pullAllSiteData();
+      } catch (e) {
+        console.error(e);
+        return false;
+      }
+      return true;
+    },
   });
 
   possiblyBrokenAuctionManagerSetups
@@ -495,7 +518,10 @@ export function Notifications() {
     });
 
   const content = notifications.length ? (
-    <div style={{ width: '300px' }}>
+    <div
+      style={{ width: '300px', color: 'white' }}
+      className={'notifications-container'}
+    >
       <List
         itemLayout="vertical"
         size="small"
@@ -536,20 +562,18 @@ export function Notifications() {
   );
 
   const justContent = (
-    <Popover
-      className="noty-popover"
-      placement="bottomLeft"
-      content={content}
-      trigger="click"
-    >
-      <h1 className="title">M</h1>
+    <Popover placement="bottomLeft" content={content} trigger="click">
+      <img src={'/bell.svg'} style={{ cursor: 'pointer' }} />
     </Popover>
   );
 
   if (notifications.length === 0) return justContent;
   else
     return (
-      <Badge count={notifications.length} style={{ backgroundColor: 'white' }}>
+      <Badge
+        count={notifications.length}
+        style={{ backgroundColor: 'white', color: 'black' }}
+      >
         {justContent}
       </Badge>
     );

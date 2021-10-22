@@ -122,6 +122,7 @@ function ArtistModal({
   return (
     <>
       <Modal
+        className={'modal-box'}
         title="Add New Artist Address"
         visible={modalOpen}
         onOk={() => {
@@ -191,10 +192,11 @@ function InnerAdminView({
   const [updatedCreators, setUpdatedCreators] = useState<
     Record<string, WhitelistedCreator>
   >({});
-  const [filteredMetadata, setFilteredMetadata] = useState<{
-    available: ParsedAccount<MasterEditionV1>[];
-    unavailable: ParsedAccount<MasterEditionV1>[];
-  }>();
+  const [filteredMetadata, setFilteredMetadata] =
+    useState<{
+      available: ParsedAccount<MasterEditionV1>[];
+      unavailable: ParsedAccount<MasterEditionV1>[];
+    }>();
   const [loading, setLoading] = useState<boolean>();
   const { metadata, masterEditions } = useMeta();
   const state = useMeta();
@@ -268,7 +270,7 @@ function InnerAdminView({
   ];
 
   return (
-    <Content>
+    <Content className={'admin-content'}>
       <Col style={{ marginTop: 10 }}>
         <Row>
           <Col span={21}>
@@ -364,6 +366,7 @@ function InnerAdminView({
         </>
       )}
       <Col>
+        <p style={{'marginTop': '30px'}}>Upgrade the performance of your existing auctions.</p>
         <Row>
           <Button
             disabled={loading}
@@ -373,7 +376,7 @@ function InnerAdminView({
               setLoading(false);
             }}
           >
-            {loading ? <Spin /> : <span>Make Metaplex Great Again</span>}
+            {loading ? <Spin /> : <span>Upgrade Auction Performance</span>}
           </Button>
         </Row>
       </Col>
