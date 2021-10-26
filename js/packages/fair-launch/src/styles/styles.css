@@ -132,13 +132,15 @@ h2 {
   justify-content: space-evenly;
   display: flex;
   flex-direction: row;
+  z-index: 10;
+  cursor: pointer;
 }
 .modal-buttons > div {
-  background-color: var(--neutral-800);
   border-radius: 6px;
   padding: 24px;
   color: gray;
   cursor: pointer;
+  z-index: 11;
 }
 
 .mt-lg {

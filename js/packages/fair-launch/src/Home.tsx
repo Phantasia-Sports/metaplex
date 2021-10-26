@@ -54,6 +54,7 @@ const ConnectButton = styled(WalletDialogButton)`
   color: white;
   font-size: 16px;
   font-weight: bold;
+  cursor:pointer;
 `;
 
 const MintContainer = styled.div``; // add your styles here
@@ -67,6 +68,7 @@ const MintButton = styled(Button)`
   color: white;
   font-size: 16px;
   font-weight: bold;
+  cursor:pointer;
 `; // add your styles here
 
 const dialogStyles: any = (theme: Theme) =>
@@ -165,6 +167,13 @@ function getPhase(
   const phaseOneEnd = toDate(fairLaunch?.state.data.phaseOneEnd)?.getTime();
   const phaseTwoEnd = toDate(fairLaunch?.state.data.phaseTwoEnd)?.getTime();
   const candyMachineGoLive = toDate(candyMachine?.state.goLiveDate)?.getTime();
+
+  console.log("Phase 1", phaseOne);
+  console.log("phase 1 end", phaseOneEnd)
+  console.log("phase 2 end", phaseTwoEnd)
+  console.log("Candy machine go live", candyMachineGoLive)
+  console.log("Fair launch data", fairLaunch?.state.data);
+  console.log(curr);
 
   if (phaseOne && curr < phaseOne) {
     return Phase.Phase0;
