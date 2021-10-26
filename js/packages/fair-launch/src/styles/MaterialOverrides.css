@@ -1,0 +1,86 @@
+@import url("./Colors.css");
+
+/** MATERIAL DESIGN OVERRIDES **/
+.MuiPopover-paper {
+  padding: 24px !important;
+  border-radius: 12px;
+  box-shadow: rgba(136, 136, 136, 0.05) 0px 20px 25px -5px,
+    rgba(163, 102, 102, 0.02) 0px 10px 10px -5px !important;
+  overflow: visible !important;
+}
+.MuiPickersDay-root {
+  border-radius: 50% !important;
+}
+.MuiPaper-root {
+  border-radius: 12px !important;
+}
+.MuiPaper-root * {
+  font-family: var(--fontFamily) !important;
+}
+
+.MuiTypography-root {
+  font-family: var(--fontFamily) !important;
+}
+
+.Mui-selected {
+  background-color: var(--primary) !important;
+}
+
+.MuiDrawer-paper {
+  margin-bottom: -12px !important;
+  padding-bottom: 48px;
+}
+
+.modal > div {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.MuiButton-containedPrimary {
+  width: 100%;
+  min-height: 45px;
+  background-color: var(--primary) !important;
+  font-family: var(--fontFamily);
+  font-weight: 700;
+}
+
+.MuiMenuItem-root {
+  padding: 6px !important;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+  color: var(--neutral-700) !important;
+  font-size: 14px !important;
+  color: var(--neutral-700) !important;
+  font-size: 14px !important;
+  margin: 0px !important;
+  border-radius: 6px !important;
+  transition: all 0.2s !important;
+}
+.MuiListItem-gutters {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+.MuiMenuItem-root:hover {
+  transform: translateY(-1px);
+}
+.MuiPaper-elevation1 {
+  box-shadow: rgba(136, 136, 136, 0.1) 0px 20px 25px -5px,
+    rgba(163, 102, 102, 0.04) 0px 10px 10px -5px !important;
+}
+.MuiMenu-paper.MuiPopover-paper {
+  padding: 24px !important;
+  border-radius: 30px !important;
+  box-shadow: rgba(136, 136, 136, 0.05) 0px 20px 25px -5px,
+    rgba(163, 102, 102, 0.02) 0px 10px 10px -5px !important;
+  overflow: visible !important;
+}
+.MuiList-padding {
+  padding: 0px !important;
+}
+.MuiListItem-root {
+  border: none !important;
+}
+.MuiMenuItem-root {
+  box-shadow: none !important;
+}
+

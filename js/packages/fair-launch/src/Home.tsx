@@ -668,19 +668,7 @@ const Home = (props: HomeProps) => {
               )}
 
               {fairLaunch && (
-                <Grid
-                  container
-                  direction="column"
-                  justifyContent="center"
-                  alignItems="center"
-                  style={{
-                    marginTop: 24,
-                    marginBottom: 20,
-                    padding: 12,
-                    background: '#131416',
-                    borderRadius: 6,
-                  }}
-                >
+                <div className="information-box">
                   {fairLaunch.ticket.data ? (
                     <>
                       <span className="font-lg white">Your Bid</span>
@@ -708,7 +696,7 @@ const Home = (props: HomeProps) => {
                       You didn't participate in this raffle.
                     </span>
                   )}
-                </Grid>
+                </div>
               )}
 
               {fairLaunch && (
