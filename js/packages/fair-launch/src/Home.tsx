@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import './styles/styles.css';
 import {
   CircularProgress,
   Container,
-  IconButton,
   Link,
   Slider,
   Snackbar,
@@ -15,10 +15,8 @@ import Grid from '@material-ui/core/Grid';
 import { createStyles, Theme } from '@material-ui/core/styles';
 import { PhaseCountdown } from './countdown';
 import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
-import CloseIcon from '@material-ui/icons/Close';
-
+import phantasia_logo from './assets/phantasia.svg';
 import Alert from '@material-ui/lab/Alert';
 
 import * as anchor from '@project-serum/anchor';
@@ -45,6 +43,7 @@ import {
 
 import { formatNumber, getAtaForMint, toDate } from './utils';
 import Countdown from 'react-countdown';
+import { MoreInfoModal } from './MoreInfoModal';
 
 const ConnectButton = styled(WalletDialogButton)`
   width: 100%;
@@ -55,19 +54,21 @@ const ConnectButton = styled(WalletDialogButton)`
   color: white;
   font-size: 16px;
   font-weight: bold;
+  cursor: pointer;
 `;
 
 const MintContainer = styled.div``; // add your styles here
 
 const MintButton = styled(Button)`
   width: 100%;
-  height: 60px;
-  margin-top: 10px;
-  margin-bottom: 5px;
+  height: 44px;
+  margin-top: 0px;
+  margin-bottom: 12px;
   background: linear-gradient(180deg, #604ae5 0%, #813eee 100%);
   color: white;
   font-size: 16px;
   font-weight: bold;
+  cursor: pointer;
 `; // add your styles here
 
 const dialogStyles: any = (theme: Theme) =>
@@ -85,21 +86,21 @@ const dialogStyles: any = (theme: Theme) =>
   });
 
 const ValueSlider = styled(Slider)({
-  color: '#C0D5FE',
-  height: 8,
+  color: '#5d5e60',
+  height: 4,
   '& > *': {
-    height: 4,
+    height: 2,
   },
   '& .MuiSlider-track': {
     border: 'none',
-    height: 4,
+    height: 2,
   },
   '& .MuiSlider-thumb': {
     height: 24,
     width: 24,
-    marginTop: -10,
-    background: 'linear-gradient(180deg, #604AE5 0%, #813EEE 100%)',
-    border: '2px solid currentColor',
+    marginTop: -12,
+    background: '#9662ff',
+    border: '4px solid #131416',
     '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
       boxShadow: 'inherit',
     },
@@ -109,14 +110,14 @@ const ValueSlider = styled(Slider)({
   },
   '& .MuiSlider-valueLabel': {
     '& > *': {
-      background: 'linear-gradient(180deg, #604AE5 0%, #813EEE 100%)',
+      background: '#9662ff',
     },
     lineHeight: 1.2,
     fontSize: 12,
     padding: 0,
     width: 32,
     height: 32,
-    marginLeft: 9,
+    marginLeft: 4,
   },
 });
 
@@ -138,23 +139,20 @@ const Header = (props: {
 }) => {
   const { phaseName, desc, date, status } = props;
   return (
-    <Grid container justifyContent="center">
-      <Grid xs={6} justifyContent="center" direction="column">
-        <Typography variant="h5" style={{ fontWeight: 600 }}>
-          {phaseName}
-        </Typography>
-        <Typography variant="body1" color="textSecondary">
-          {desc}
-        </Typography>
-      </Grid>
-      <Grid xs={6} container justifyContent="flex-end">
-        <PhaseCountdown
-          date={toDate(date)}
-          style={{ justifyContent: 'flex-end' }}
-          status={status || 'COMPLETE'}
-        />
-      </Grid>
-    </Grid>
+    <div className="flex-row mb-md">
+      <div className="flex-col">
+        <span className="white weight-500 font-lg">
+          Fair Launch Protocol {phaseName}
+        </span>
+        <span className="gray weight-500 font-lg">{desc}</span>
+      </div>
+      <div className="flex-grow"></div>
+      <PhaseCountdown
+        date={toDate(date)}
+        style={{ justifyContent: 'flex-end' }}
+        status={status || 'COMPLETE'}
+      />
+    </div>
   );
 };
 
@@ -162,12 +160,20 @@ function getPhase(
   fairLaunch: FairLaunchAccount | undefined,
   candyMachine: CandyMachineAccount | undefined,
 ): Phase {
+  // return Phase.Phase1;
   const curr = new Date().getTime();
 
   const phaseOne = toDate(fairLaunch?.state.data.phaseOneStart)?.getTime();
   const phaseOneEnd = toDate(fairLaunch?.state.data.phaseOneEnd)?.getTime();
   const phaseTwoEnd = toDate(fairLaunch?.state.data.phaseTwoEnd)?.getTime();
   const candyMachineGoLive = toDate(candyMachine?.state.goLiveDate)?.getTime();
+
+  console.log('Phase 1', phaseOne);
+  console.log('phase 1 end', phaseOneEnd);
+  console.log('phase 2 end', phaseTwoEnd);
+  console.log('Candy machine go live', candyMachineGoLive);
+  console.log('Fair launch data', fairLaunch?.state.data);
+  console.log(curr);
 
   if (phaseOne && curr < phaseOne) {
     return Phase.Phase0;
@@ -415,16 +421,10 @@ const Home = (props: HomeProps) => {
       value: min || 0,
       label: `${min} SOL`,
     },
-    // TODO:L
     {
       value: median || 0,
       label: `${median}`,
     },
-    // display user comitted value
-    // {
-    //   value: 37,
-    //   label: '37°C',
-    // },
     {
       value: max || 0,
       label: `${max} SOL`,
@@ -554,631 +554,412 @@ const Home = (props: HomeProps) => {
         0.01
   );
 
+  /*************************************************************************
+   * ***********************************************************************
+   * ***********************************************************************
+   * ***********************************************************************
+   * ***********************************************************************
+   * HTML
+   * HTML
+   * HTML
+   * HTML
+   * HTML
+   * HTML
+   * HTML
+   * HTML
+   * HTML
+   * HTML
+   * HTML
+   * HTML
+   * HTML
+   * HTML
+   * HTML
+   * ***********************************************************************
+   * ***********************************************************************
+   * ***********************************************************************
+   * ***********************************************************************
+   ************************************************************************/
   return (
-    <Container style={{ marginTop: 100 }}>
-      <Container maxWidth="xs" style={{ position: 'relative' }}>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <Link
-            component="button"
-            variant="body2"
-            color="textSecondary"
-            align="right"
-            onClick={() => {
-              setAnitRugPolicyOpen(true);
-            }}
-          >
-            Anti-Rug Policy
-          </Link>
-        </div>
-      </Container>
-      <Container maxWidth="xs" style={{ position: 'relative' }}>
-        <Paper
-          style={{ padding: 24, backgroundColor: '#151A1F', borderRadius: 6 }}
-        >
-          <Grid container justifyContent="center" direction="column">
-            {phase === Phase.Phase0 && (
-              <Header
-                phaseName={'Phase 0'}
-                desc={'Anticipation Phase'}
-                date={fairLaunch?.state.data.phaseOneStart}
-              />
-            )}
-            {phase === Phase.Phase1 && (
-              <Header
-                phaseName={'Phase 1'}
-                desc={'Set price phase'}
-                date={fairLaunch?.state.data.phaseOneEnd}
-              />
-            )}
-
-            {phase === Phase.Phase2 && (
-              <Header
-                phaseName={'Phase 2'}
-                desc={'Grace period'}
-                date={fairLaunch?.state.data.phaseTwoEnd}
-              />
-            )}
-
-            {phase === Phase.Lottery && (
-              <Header
-                phaseName={'Phase 3'}
-                desc={'Raffle in progress'}
-                date={fairLaunch?.state.data.phaseTwoEnd.add(
-                  fairLaunch?.state.data.lotteryDuration,
-                )}
-              />
-            )}
-
-            {phase === Phase.Phase3 && !candyMachine && (
-              <Header
-                phaseName={'Phase 3'}
-                desc={'Raffle finished!'}
-                date={fairLaunch?.state.data.phaseTwoEnd}
-              />
-            )}
-
-            {phase === Phase.Phase3 && candyMachine && (
-              <Header
-                phaseName={'Phase 3'}
-                desc={'Minting starts in...'}
-                date={candyMachine?.state.goLiveDate}
-              />
-            )}
-
-            {phase === Phase.Phase4 && (
-              <Header
-                phaseName={
-                  candyMachinePredatesFairLaunch ? 'Phase 3' : 'Phase 4'
-                }
-                desc={'Candy Time 🍬 🍬 🍬'}
-                date={candyMachine?.state.goLiveDate}
-                status="LIVE"
-              />
-            )}
-
-            {fairLaunch && (
-              <Grid
-                container
-                direction="column"
-                justifyContent="center"
-                alignItems="center"
-                style={{
-                  height: 200,
-                  marginTop: 20,
-                  marginBottom: 20,
-                  background: '#384457',
-                  borderRadius: 6,
-                }}
-              >
-                {fairLaunch.ticket.data ? (
-                  <>
-                    <Typography>Your bid</Typography>
-                    <Typography variant="h6" style={{ fontWeight: 900 }}>
-                      {formatNumber.format(
-                        (fairLaunch?.ticket.data?.amount.toNumber() || 0) /
-                          LAMPORTS_PER_SOL,
-                      )}{' '}
-                      SOL
-                    </Typography>
-                  </>
-                ) : [Phase.Phase0, Phase.Phase1].includes(phase) ? (
-                  <Typography>
-                    You haven't entered this raffle yet. <br />
-                    {fairLaunch?.state?.data?.fee && (
-                      <span>
-                        <b>
-                          All initial bids will incur a ◎{' '}
-                          {fairLaunch?.state?.data?.fee.toNumber() /
-                            LAMPORTS_PER_SOL}{' '}
-                          fee.
-                        </b>
-                      </span>
-                    )}
-                  </Typography>
-                ) : (
-                  <Typography>
-                    You didn't participate in this raffle.
-                  </Typography>
-                )}
-              </Grid>
-            )}
-
-            {fairLaunch && (
-              <>
-                {[
-                  Phase.Phase1,
-                  Phase.Phase2,
-                  Phase.Phase3,
-                  Phase.Lottery,
-                ].includes(phase) &&
-                  fairLaunch?.ticket?.data?.state.withdrawn && (
-                    <div style={{ paddingTop: '15px' }}>
-                      <Alert severity="error">
-                        Your bid was withdrawn and cannot be adjusted or
-                        re-inserted.
-                      </Alert>
-                    </div>
-                  )}
-                {[Phase.Phase1, Phase.Phase2].includes(phase) &&
-                  fairLaunch.state.currentMedian &&
-                  fairLaunch?.ticket?.data?.amount &&
-                  !fairLaunch?.ticket?.data?.state.withdrawn &&
-                  fairLaunch.state.currentMedian.gt(
-                    fairLaunch?.ticket?.data?.amount,
-                  ) && (
-                    <div style={{ paddingTop: '15px' }}>
-                      <Alert severity="warning">
-                        Your bid is currently below the median and will not be
-                        eligible for the raffle.
-                      </Alert>
-                    </div>
-                  )}
-                {[Phase.Phase3, Phase.Lottery].includes(phase) &&
-                  fairLaunch.state.currentMedian &&
-                  fairLaunch?.ticket?.data?.amount &&
-                  !fairLaunch?.ticket?.data?.state.withdrawn &&
-                  fairLaunch.state.currentMedian.gt(
-                    fairLaunch?.ticket?.data?.amount,
-                  ) && (
-                    <div style={{ paddingTop: '15px' }}>
-                      <Alert severity="error">
-                        Your bid was below the median and was not included in
-                        the raffle. You may click <em>Withdraw</em> when the
-                        raffle ends or you will be automatically issued one when
-                        the Fair Launch authority withdraws from the treasury.
-                      </Alert>
-                    </div>
-                  )}
-                {notEnoughSOL && (
-                  <Alert severity="error">
-                    You do not have enough SOL in your account to place this
-                    bid.
-                  </Alert>
-                )}
-              </>
-            )}
-
-            {[Phase.Phase1, Phase.Phase2].includes(phase) && (
-              <>
-                <Grid style={{ marginTop: 40, marginBottom: 20 }}>
-                  <ValueSlider
-                    min={min}
-                    marks={marks}
-                    max={max}
-                    step={step}
-                    value={contributed}
-                    onChange={(ev, val) => setContributed(val as any)}
-                    valueLabelDisplay="auto"
-                    style={{
-                      width: 'calc(100% - 40px)',
-                      marginLeft: 20,
-                      height: 30,
-                    }}
-                  />
-                </Grid>
-              </>
-            )}
-
-            {!wallet.connected ? (
-              <ConnectButton>
-                Connect{' '}
-                {[Phase.Phase1].includes(phase) ? 'to bid' : 'to see status'}
-              </ConnectButton>
-            ) : (
-              <div>
-                {[Phase.Phase1, Phase.Phase2].includes(phase) && (
-                  <>
-                    <MintButton
-                      onClick={onDeposit}
-                      variant="contained"
-                      disabled={
-                        isMinting ||
-                        (!fairLaunch?.ticket.data && phase === Phase.Phase2) ||
-                        notEnoughSOL
-                      }
-                    >
-                      {isMinting ? (
-                        <CircularProgress />
-                      ) : !fairLaunch?.ticket.data ? (
-                        'Place bid'
-                      ) : (
-                        'Change bid'
-                      )}
-                      {}
-                    </MintButton>
-                  </>
-                )}
-
-                {[Phase.Phase3].includes(phase) && (
-                  <>
-                    {isWinner(fairLaunch, fairLaunchBalance) && (
-                      <MintButton
-                        onClick={onPunchTicket}
-                        variant="contained"
-                        disabled={
-                          fairLaunch?.ticket.data?.state.punched !== undefined
-                        }
-                      >
-                        {isMinting ? <CircularProgress /> : 'Punch Ticket'}
-                      </MintButton>
-                    )}
-
-                    {!isWinner(fairLaunch, fairLaunchBalance) && (
-                      <MintButton
-                        onClick={onRefundTicket}
-                        variant="contained"
-                        disabled={
-                          isMinting ||
-                          fairLaunch?.ticket.data === undefined ||
-                          fairLaunch?.ticket.data?.state.withdrawn !== undefined
-                        }
-                      >
-                        {isMinting ? <CircularProgress /> : 'Withdraw'}
-                      </MintButton>
-                    )}
-                  </>
-                )}
-
-                {phase === Phase.Phase4 && (
-                  <>
-                    {(!fairLaunch ||
-                      isWinner(fairLaunch, fairLaunchBalance)) && (
-                      <MintContainer>
-                        <MintButton
-                          disabled={
-                            candyMachine?.state.isSoldOut ||
-                            isMinting ||
-                            !candyMachine?.state.isActive ||
-                            (fairLaunch?.ticket?.data?.state.punched &&
-                              fairLaunchBalance === 0)
-                          }
-                          onClick={onMint}
-                          variant="contained"
-                        >
-                          {fairLaunch?.ticket?.data?.state.punched &&
-                          fairLaunchBalance === 0 ? (
-                            'MINTED'
-                          ) : candyMachine?.state.isSoldOut ? (
-                            'SOLD OUT'
-                          ) : isMinting ? (
-                            <CircularProgress />
-                          ) : (
-                            'MINT'
-                          )}
-                        </MintButton>
-                      </MintContainer>
-                    )}
-
-                    {!isWinner(fairLaunch, fairLaunchBalance) && (
-                      <MintButton
-                        onClick={onRefundTicket}
-                        variant="contained"
-                        disabled={
-                          isMinting ||
-                          fairLaunch?.ticket.data === undefined ||
-                          fairLaunch?.ticket.data?.state.withdrawn !== undefined
-                        }
-                      >
-                        {isMinting ? <CircularProgress /> : 'Withdraw'}
-                      </MintButton>
-                    )}
-                  </>
-                )}
-              </div>
-            )}
-
-            <Grid
-              container
-              justifyContent="space-between"
-              color="textSecondary"
-            >
-              <Link
-                component="button"
-                variant="body2"
-                color="textSecondary"
-                align="left"
+    <div className="container-view relative blob-bg">
+      <div className="bg-blurred-overlay"></div>
+      <div className="stripe-svg stripe-pattern-container"></div>
+      <Grid container className="h-full w-full">
+        <Grid item xs={6} className="test-border">
+          <div className="h-full w-full flex justify-center relative flex-col test-border relative ">
+            <div className="modal-buttons">
+              <div
                 onClick={() => {
                   setHowToOpen(true);
                 }}
               >
-                How this raffle works
-              </Link>
-              {fairLaunch?.ticket.data && (
-                <Link
-                  component="button"
-                  variant="body2"
-                  color="textSecondary"
-                  align="right"
-                  onClick={() => {
-                    if (
-                      !fairLaunch ||
-                      phase === Phase.Lottery ||
-                      isWinner(fairLaunch, fairLaunchBalance)
-                    ) {
-                      setRefundExplainerOpen(true);
-                    } else {
-                      onRefundTicket();
-                    }
-                  }}
-                >
-                  Withdraw funds
-                </Link>
-              )}
-            </Grid>
-            <Dialog
-              open={refundExplainerOpen}
-              onClose={() => setRefundExplainerOpen(false)}
-              PaperProps={{
-                style: { backgroundColor: '#222933', borderRadius: 6 },
-              }}
-            >
-              <MuiDialogContent style={{ padding: 24 }}>
-                During raffle phases, or if you are a winner, or if this website
-                is not configured to be a fair launch but simply a candy
-                machine, refunds are disallowed.
-              </MuiDialogContent>
-            </Dialog>
-            <Dialog
-              open={antiRugPolicyOpen}
-              onClose={() => {
-                setAnitRugPolicyOpen(false);
-              }}
-              PaperProps={{
-                style: { backgroundColor: '#222933', borderRadius: 6 },
-              }}
-            >
-              <MuiDialogContent style={{ padding: 24 }}>
-                {!fairLaunch?.state.data.antiRugSetting && (
-                  <span>This Fair Launch has no anti-rug settings.</span>
-                )}
-                {fairLaunch?.state.data.antiRugSetting &&
-                  fairLaunch.state.data.antiRugSetting.selfDestructDate && (
-                    <div>
-                      <h3>Anti-Rug Policy</h3>
-                      <p>
-                        This raffle is governed by a smart contract to prevent
-                        the artist from running away with your money.
-                      </p>
-                      <p>How it works:</p>
-                      This project will retain{' '}
-                      {fairLaunch.state.data.antiRugSetting.reserveBp / 100}% (◎{' '}
-                      {(fairLaunch?.treasury *
-                        fairLaunch.state.data.antiRugSetting.reserveBp) /
-                        (LAMPORTS_PER_SOL * 10000)}
-                      ) of the pledged amount in a locked state until all but{' '}
-                      {fairLaunch.state.data.antiRugSetting.tokenRequirement.toNumber()}{' '}
-                      NFTs (out of up to{' '}
-                      {fairLaunch.state.data.numberOfTokens.toNumber()}) have
-                      been minted.
-                      <p>
-                        If more than{' '}
-                        {fairLaunch.state.data.antiRugSetting.tokenRequirement.toNumber()}{' '}
-                        NFTs remain as of{' '}
-                        {toDate(
-                          fairLaunch.state.data.antiRugSetting.selfDestructDate,
-                        )?.toLocaleDateString()}{' '}
-                        at{' '}
-                        {toDate(
-                          fairLaunch.state.data.antiRugSetting.selfDestructDate,
-                        )?.toLocaleTimeString()}
-                        , you will have the option to get a refund of{' '}
-                        {fairLaunch.state.data.antiRugSetting.reserveBp / 100}%
-                        of the cost of your token.
-                      </p>
-                      {fairLaunch?.ticket?.data &&
-                        !fairLaunch?.ticket?.data.state.withdrawn && (
-                          <MintButton
-                            onClick={onRugRefund}
-                            variant="contained"
-                            disabled={
-                              !!!fairLaunch.ticket.data ||
-                              !fairLaunch.ticket.data.state.punched ||
-                              Date.now() / 1000 <
-                                fairLaunch.state.data.antiRugSetting.selfDestructDate.toNumber()
-                            }
-                          >
-                            {isMinting ? (
-                              <CircularProgress />
-                            ) : Date.now() / 1000 <
-                              fairLaunch.state.data.antiRugSetting.selfDestructDate.toNumber() ? (
-                              <span>
-                                Refund in...
-                                <Countdown
-                                  date={toDate(
-                                    fairLaunch.state.data.antiRugSetting
-                                      .selfDestructDate,
-                                  )}
-                                />
-                              </span>
-                            ) : (
-                              'Refund'
-                            )}
-                            {}
-                          </MintButton>
-                        )}
-                      <div style={{ textAlign: 'center', marginTop: '-5px' }}>
-                        {fairLaunch?.ticket?.data &&
-                          !fairLaunch?.ticket?.data?.state.punched && (
-                            <small>
-                              You currently have a ticket but it has not been
-                              punched yet, so cannot be refunded.
-                            </small>
-                          )}
-                      </div>
-                    </div>
-                  )}
-              </MuiDialogContent>
-            </Dialog>
-            <Dialog
-              open={howToOpen}
-              onClose={() => setHowToOpen(false)}
-              PaperProps={{
-                style: { backgroundColor: '#222933', borderRadius: 6 },
-              }}
-            >
-              <MuiDialogTitle
-                disableTypography
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                How does this work?
+              </div>
+              <div
+                onClick={() => {
+                  setAnitRugPolicyOpen(true);
                 }}
               >
-                <Link
-                  component="button"
-                  variant="h6"
-                  color="textSecondary"
-                  onClick={() => {
-                    setHowToOpen(true);
-                  }}
-                >
-                  How it works
-                </Link>
-                <IconButton
-                  aria-label="close"
-                  className={dialogStyles.closeButton}
-                  onClick={() => setHowToOpen(false)}
-                >
-                  <CloseIcon />
-                </IconButton>
-              </MuiDialogTitle>
-              <MuiDialogContent>
-                <Typography variant="h6">
-                  Phase 1 - Set the fair price:
-                </Typography>
-                <Typography gutterBottom color="textSecondary">
-                  Enter a bid in the range provided by the artist. The median of
-                  all bids will be the "fair" price of the raffle ticket.{' '}
-                  {fairLaunch?.state?.data?.fee && (
-                    <span>
-                      <b>
-                        All bids will incur a ◎{' '}
-                        {fairLaunch?.state?.data?.fee.toNumber() /
-                          LAMPORTS_PER_SOL}{' '}
-                        fee.
-                      </b>
+                Anti-Rug Policy
+              </div>
+            </div>
+            <div className="p-xl flex-col h-full mt-lg">
+              <span className="font-lg gray weight-300">Season 1</span>
+              <h2 className="m-0 white">Introducing...</h2>
+              <h1 className=" white mb-md">
+                The <span className="gradient-text">Phanatics</span>
+              </h1>
+
+              <span className="font-lg weight-300 gray">
+                A beautifully designed set of 8888 unique generative art pieces.
+                Mint a Phantasia NFT to gain early access to exclusive platform
+                features, and be prioritized in future NFT drops.
+              </span>
+              <br></br>
+              <br></br>
+              <div className="flex-grow"></div>
+              {phase === Phase.Phase0 && (
+                <Header
+                  phaseName={'Phase 0'}
+                  desc={'Anticipation Phase'}
+                  date={fairLaunch?.state.data.phaseOneStart}
+                />
+              )}
+              {phase === Phase.Phase1 && (
+                <Header
+                  phaseName={'Phase 1'}
+                  desc={'Set price phase'}
+                  date={fairLaunch?.state.data.phaseOneEnd}
+                />
+              )}
+
+              {phase === Phase.Phase2 && (
+                <Header
+                  phaseName={'Phase 2'}
+                  desc={'Grace period'}
+                  date={fairLaunch?.state.data.phaseTwoEnd}
+                />
+              )}
+
+              {phase === Phase.Lottery && (
+                <Header
+                  phaseName={'Phase 3'}
+                  desc={'Raffle in progress'}
+                  date={fairLaunch?.state.data.phaseTwoEnd.add(
+                    fairLaunch?.state.data.lotteryDuration,
+                  )}
+                />
+              )}
+              {phase === Phase.Phase3 && !candyMachine && (
+                <Header
+                  phaseName={'Phase 3'}
+                  desc={'Raffle finished!'}
+                  date={fairLaunch?.state.data.phaseTwoEnd}
+                />
+              )}
+
+              {phase === Phase.Phase3 && candyMachine && (
+                <Header
+                  phaseName={'Phase 3'}
+                  desc={'Minting starts in...'}
+                  date={candyMachine?.state.goLiveDate}
+                />
+              )}
+
+              {phase === Phase.Phase4 && (
+                <Header
+                  phaseName={
+                    candyMachinePredatesFairLaunch ? 'Phase 3' : 'Phase 4'
+                  }
+                  desc={'Candy Time 🍬 🍬 🍬'}
+                  date={candyMachine?.state.goLiveDate}
+                  status="LIVE"
+                />
+              )}
+
+              {fairLaunch && (
+                <div className="information-box mb-sm">
+                  {fairLaunch.ticket.data ? (
+                    <>
+                      <span className="font-lg white">Your Bid</span>
+                      <span className="font-lg white weight-700">
+                        {formatNumber.format(
+                          (fairLaunch?.ticket.data?.amount.toNumber() || 0) /
+                            LAMPORTS_PER_SOL,
+                        )}{' '}
+                        SOL
+                      </span>
+                    </>
+                  ) : [Phase.Phase0, Phase.Phase1].includes(phase) ? (
+                    <div className="">
+                      {fairLaunch?.state?.data?.fee && (
+                        <span className="font-lg weight-400 gray">
+                          All initial bids will incur a ◎{' '}
+                          {fairLaunch?.state?.data?.fee.toNumber() /
+                            LAMPORTS_PER_SOL}{' '}
+                          fee.
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="font-lg weight-400 gray">
+                      You didn't participate in this raffle.
                     </span>
                   )}
-                </Typography>
-                <Typography variant="h6">Phase 2 - Grace period:</Typography>
-                <Typography gutterBottom color="textSecondary">
-                  If your bid was at or above the fair price, you automatically
-                  get a raffle ticket at that price. There's nothing else you
-                  need to do. Your excess SOL will be returned to you when the
-                  Fair Launch authority withdraws from the treasury. If your bid
-                  is below the median price, you can still opt in at the fair
-                  price during this phase.
-                </Typography>
-                {candyMachinePredatesFairLaunch ? (
-                  <>
-                    <Typography variant="h6">
-                      Phase 3 - The Candy Machine:
-                    </Typography>
-                    <Typography gutterBottom color="textSecondary">
-                      Everyone who got a raffle ticket at the fair price is
-                      entered to win an NFT. If you win an NFT, congrats. If you
-                      don’t, no worries, your SOL will go right back into your
-                      wallet.
-                    </Typography>
-                  </>
-                ) : (
-                  <>
-                    <Typography variant="h6">Phase 3 - The Lottery:</Typography>
-                    <Typography gutterBottom color="textSecondary">
-                      Everyone who got a raffle ticket at the fair price is
-                      entered to win a Fair Launch Token that entitles them to
-                      an NFT at a later date using a Candy Machine here. If you
-                      don’t win, no worries, your SOL will go right back into
-                      your wallet.
-                    </Typography>
-                    <Typography variant="h6">
-                      Phase 4 - The Candy Machine:
-                    </Typography>
-                    <Typography gutterBottom color="textSecondary">
-                      On{' '}
-                      {candyMachine?.state.goLiveDate
-                        ? toDate(
-                            candyMachine?.state.goLiveDate,
-                          )?.toLocaleString()
-                        : ' some later date'}
-                      , you will be able to exchange your Fair Launch token for
-                      an NFT using the Candy Machine at this site by pressing
-                      the Mint Button.
-                    </Typography>
-                  </>
-                )}
-              </MuiDialogContent>
-            </Dialog>
+                </div>
+              )}
 
-            {/* {wallet.connected && (
-              <p>
-                Address: {shortenAddress(wallet.publicKey?.toBase58() || '')}
-              </p>
-            )}
-
-            {wallet.connected && (
-              <p>Balance: {(balance || 0).toLocaleString()} SOL</p>
-            )} */}
-          </Grid>
-        </Paper>
-      </Container>
-
-      {fairLaunch && (
-        <Container
-          maxWidth="xs"
-          style={{ position: 'relative', marginTop: 10 }}
-        >
-          <div style={{ margin: 20 }}>
-            <Grid container direction="row" wrap="nowrap">
-              <Grid container md={4} direction="column">
-                <Typography variant="body2" color="textSecondary">
-                  Bids
-                </Typography>
-                <Typography
-                  variant="h6"
-                  color="textPrimary"
-                  style={{ fontWeight: 'bold' }}
-                >
-                  {fairLaunch?.state.numberTicketsSold.toNumber() || 0}
-                </Typography>
-              </Grid>
-              <Grid container md={4} direction="column">
-                <Typography variant="body2" color="textSecondary">
-                  Median bid
-                </Typography>
-                <Typography
-                  variant="h6"
-                  color="textPrimary"
-                  style={{ fontWeight: 'bold' }}
-                >
-                  ◎ {formatNumber.format(median)}
-                </Typography>
-              </Grid>
-              <Grid container md={4} direction="column">
-                <Typography variant="body2" color="textSecondary">
-                  Total raised
-                </Typography>
-                <Typography
-                  variant="h6"
-                  color="textPrimary"
-                  style={{ fontWeight: 'bold' }}
-                >
-                  ◎{' '}
-                  {formatNumber.format(
-                    (fairLaunch?.treasury || 0) / LAMPORTS_PER_SOL,
+              {fairLaunch && (
+                <>
+                  {[
+                    Phase.Phase1,
+                    Phase.Phase2,
+                    Phase.Phase3,
+                    Phase.Lottery,
+                  ].includes(phase) &&
+                    fairLaunch?.ticket?.data?.state.withdrawn && (
+                      <div style={{ paddingTop: '15px' }}>
+                        <Alert severity="error">
+                          Your bid was withdrawn and cannot be adjusted or
+                          re-inserted.
+                        </Alert>
+                      </div>
+                    )}
+                  {[Phase.Phase1, Phase.Phase2].includes(phase) &&
+                    fairLaunch.state.currentMedian &&
+                    fairLaunch?.ticket?.data?.amount &&
+                    !fairLaunch?.ticket?.data?.state.withdrawn &&
+                    fairLaunch.state.currentMedian.gt(
+                      fairLaunch?.ticket?.data?.amount,
+                    ) && (
+                      <div style={{ paddingTop: '15px' }}>
+                        <Alert severity="warning">
+                          Your bid is currently below the median and will not be
+                          eligible for the raffle.
+                        </Alert>
+                      </div>
+                    )}
+                  {[Phase.Phase3, Phase.Lottery].includes(phase) &&
+                    fairLaunch.state.currentMedian &&
+                    fairLaunch?.ticket?.data?.amount &&
+                    !fairLaunch?.ticket?.data?.state.withdrawn &&
+                    fairLaunch.state.currentMedian.gt(
+                      fairLaunch?.ticket?.data?.amount,
+                    ) && (
+                      <div style={{ paddingTop: '15px' }}>
+                        <Alert severity="error">
+                          Your bid was below the median and was not included in
+                          the raffle. You may click <em>Withdraw</em> when the
+                          raffle ends or you will be automatically issued one
+                          when the Fair Launch authority withdraws from the
+                          treasury.
+                        </Alert>
+                      </div>
+                    )}
+                  {notEnoughSOL && (
+                    <Alert severity="error">
+                      You do not have enough SOL in your account to place this
+                      bid.
+                    </Alert>
                   )}
-                </Typography>
-              </Grid>
-            </Grid>
+                </>
+              )}
+
+              {[Phase.Phase1, Phase.Phase2].includes(phase) && (
+                <>
+                  <Grid style={{ marginTop: 6, marginBottom: 0 }}>
+                    <ValueSlider
+                      min={min}
+                      marks={marks}
+                      max={max}
+                      step={step}
+                      value={contributed}
+                      onChange={(ev, val) => setContributed(val as any)}
+                      valueLabelDisplay="auto"
+                      style={{
+                        width: 'calc(100% - 40px)',
+                        marginLeft: 20,
+                      }}
+                    />
+                  </Grid>
+                </>
+              )}
+
+              {!wallet.connected ? (
+                <ConnectButton>
+                  Connect{' '}
+                  {[Phase.Phase1].includes(phase) ? 'to bid' : 'to see status'}
+                </ConnectButton>
+              ) : (
+                <div>
+                  {[Phase.Phase1, Phase.Phase2].includes(phase) && (
+                    <>
+                      <MintButton
+                        onClick={onDeposit}
+                        variant="contained"
+                        disabled={
+                          isMinting ||
+                          (!fairLaunch?.ticket.data &&
+                            phase === Phase.Phase2) ||
+                          notEnoughSOL
+                        }
+                      >
+                        {isMinting ? (
+                          <CircularProgress />
+                        ) : !fairLaunch?.ticket.data ? (
+                          'Place bid'
+                        ) : (
+                          'Change bid'
+                        )}
+                        {}
+                      </MintButton>
+                    </>
+                  )}
+
+                  {[Phase.Phase3].includes(phase) && (
+                    <>
+                      {isWinner(fairLaunch, fairLaunchBalance) && (
+                        <MintButton
+                          onClick={onPunchTicket}
+                          variant="contained"
+                          disabled={
+                            fairLaunch?.ticket.data?.state.punched !== undefined
+                          }
+                        >
+                          {isMinting ? <CircularProgress /> : 'Punch Ticket'}
+                        </MintButton>
+                      )}
+
+                      {!isWinner(fairLaunch, fairLaunchBalance) && (
+                        <MintButton
+                          onClick={onRefundTicket}
+                          variant="contained"
+                          disabled={
+                            isMinting ||
+                            fairLaunch?.ticket.data === undefined ||
+                            fairLaunch?.ticket.data?.state.withdrawn !==
+                              undefined
+                          }
+                        >
+                          {isMinting ? <CircularProgress /> : 'Withdraw'}
+                        </MintButton>
+                      )}
+                    </>
+                  )}
+
+                  {phase === Phase.Phase4 && (
+                    <>
+                      {(!fairLaunch ||
+                        isWinner(fairLaunch, fairLaunchBalance)) && (
+                        <MintContainer>
+                          <MintButton
+                            disabled={
+                              candyMachine?.state.isSoldOut ||
+                              isMinting ||
+                              !candyMachine?.state.isActive ||
+                              (fairLaunch?.ticket?.data?.state.punched &&
+                                fairLaunchBalance === 0)
+                            }
+                            onClick={onMint}
+                            variant="contained"
+                          >
+                            {fairLaunch?.ticket?.data?.state.punched &&
+                            fairLaunchBalance === 0 ? (
+                              'MINTED'
+                            ) : candyMachine?.state.isSoldOut ? (
+                              'SOLD OUT'
+                            ) : isMinting ? (
+                              <CircularProgress />
+                            ) : (
+                              'MINT'
+                            )}
+                          </MintButton>
+                        </MintContainer>
+                      )}
+
+                      {!isWinner(fairLaunch, fairLaunchBalance) && (
+                        <MintButton
+                          onClick={onRefundTicket}
+                          variant="contained"
+                          disabled={
+                            isMinting ||
+                            fairLaunch?.ticket.data === undefined ||
+                            fairLaunch?.ticket.data?.state.withdrawn !==
+                              undefined
+                          }
+                        >
+                          {isMinting ? <CircularProgress /> : 'Withdraw'}
+                        </MintButton>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+
+              {fairLaunch && (
+                <div className="flex-row justify-space w-full">
+                  <div className="flex-col">
+                    <span className="font-lg weight-400 gray">Bids</span>
+                    <span className="font-lg weight-600 white">
+                      {fairLaunch?.state.numberTicketsSold.toNumber() || 0}
+                    </span>
+                  </div>
+
+                  <div className="flex-col">
+                    <span className="font-lg weight-400 gray">Median Bid</span>
+                    <span className="font-lg weight-600 white">
+                      ◎ {formatNumber.format(median)}
+                    </span>
+                  </div>
+                  <div className="flex-col">
+                    <span className="font-lg weight-400 gray">
+                      Total Raised
+                    </span>
+                    <span className="font-lg weight-600 white">
+                      ◎{' '}
+                      {formatNumber.format(
+                        (fairLaunch?.treasury || 0) / LAMPORTS_PER_SOL,
+                      )}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </Container>
-      )}
+        </Grid>
+
+        {/* *********************** NFT CARD SECTION */}
+        {/*
+         *
+         *
+         * *
+         * *
+         * *
+         */}
+        <Grid item xs={6} className="test-border">
+          <div className="relative flex w-full h-full test-border">
+            <div className="wiggle-pattern-container wiggle-svg"></div>
+            <div className="nft-card-1">
+              <div className="nft-card-img mb-md"></div>
+              <div className="rarity-label">
+                <span className="white font-md weight-500">Rarity 1/1</span>
+              </div>
+            </div>
+            <div className="nft-card-2">
+              <div className="nft-card-img mb-md"></div>
+              <div className="rarity-label">
+                <span className="white font-md weight-500">Rarity 1/1</span>
+              </div>
+            </div>
+            <div className="nft-card-3">
+              <div className="nft-card-img mb-md"></div>
+              <div className="rarity-label">
+                <span className="white font-md weight-500">Rarity 1/1</span>
+              </div>
+            </div>
+          </div>
+        </Grid>
+        {/* *********************** END NFT CARD SECTION */}
+      </Grid>
       <Snackbar
         open={alertState.open}
         autoHideDuration={6000}
@@ -1191,7 +972,113 @@ const Home = (props: HomeProps) => {
           {alertState.message}
         </Alert>
       </Snackbar>
-    </Container>
+      <Dialog
+        open={antiRugPolicyOpen}
+        onClose={() => {
+          setAnitRugPolicyOpen(false);
+        }}
+        PaperProps={{
+          style: { backgroundColor: '#222933', borderRadius: 6 },
+        }}
+      >
+        <MuiDialogContent style={{ padding: 24 }}>
+          {!fairLaunch?.state.data.antiRugSetting && (
+            <span>This Fair Launch has no anti-rug settings.</span>
+          )}
+          {fairLaunch?.state.data.antiRugSetting &&
+            fairLaunch.state.data.antiRugSetting.selfDestructDate && (
+              <div>
+                <h3>Anti-Rug Policy</h3>
+                <p>
+                  This raffle is governed by a smart contract to prevent the
+                  artist from running away with your money.
+                </p>
+                <p>How it works:</p>
+                This project will retain{' '}
+                {fairLaunch.state.data.antiRugSetting.reserveBp / 100}% (◎{' '}
+                {(fairLaunch?.treasury *
+                  fairLaunch.state.data.antiRugSetting.reserveBp) /
+                  (LAMPORTS_PER_SOL * 10000)}
+                ) of the pledged amount in a locked state until all but{' '}
+                {fairLaunch.state.data.antiRugSetting.tokenRequirement.toNumber()}{' '}
+                NFTs (out of up to{' '}
+                {fairLaunch.state.data.numberOfTokens.toNumber()}) have been
+                minted.
+                <p>
+                  If more than{' '}
+                  {fairLaunch.state.data.antiRugSetting.tokenRequirement.toNumber()}{' '}
+                  NFTs remain as of{' '}
+                  {toDate(
+                    fairLaunch.state.data.antiRugSetting.selfDestructDate,
+                  )?.toLocaleDateString()}{' '}
+                  at{' '}
+                  {toDate(
+                    fairLaunch.state.data.antiRugSetting.selfDestructDate,
+                  )?.toLocaleTimeString()}
+                  , you will have the option to get a refund of{' '}
+                  {fairLaunch.state.data.antiRugSetting.reserveBp / 100}% of the
+                  cost of your token.
+                </p>
+                <br></br><br></br>
+                {fairLaunch?.ticket?.data &&
+                  !fairLaunch?.ticket?.data.state.withdrawn && (
+                    <MintButton
+                      onClick={onRugRefund}
+                      variant="contained"
+                      disabled={
+                        !!!fairLaunch.ticket.data ||
+                        !fairLaunch.ticket.data.state.punched ||
+                        Date.now() / 1000 <
+                          fairLaunch.state.data.antiRugSetting.selfDestructDate.toNumber()
+                      }
+                    >
+                      {isMinting ? (
+                        <CircularProgress />
+                      ) : Date.now() / 1000 <
+                        fairLaunch.state.data.antiRugSetting.selfDestructDate.toNumber() ? (
+                        <span>
+                          Refund in...
+                          <Countdown
+                            date={toDate(
+                              fairLaunch.state.data.antiRugSetting
+                                .selfDestructDate,
+                            )}
+                          />
+                        </span>
+                      ) : (
+                        'Refund'
+                      )}
+                      {}
+                    </MintButton>
+                  )}
+                <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                  {fairLaunch?.ticket?.data &&
+                    !fairLaunch?.ticket?.data?.state.punched && (
+                      <small>
+                        You currently have a ticket but it has not been punched
+                        yet, so cannot be refunded.
+                      </small>
+                    )}
+                </div>
+              </div>
+            )}
+        </MuiDialogContent>
+      </Dialog>
+      <MoreInfoModal
+        open={howToOpen}
+        onClose={() => setHowToOpen(false)}
+        setHowToOpen={setHowToOpen}
+        PaperProps={{}}
+        fairLaunch={fairLaunch}
+        candyMachinePredatesFairLaunch={candyMachinePredatesFairLaunch}
+        candyMachine={candyMachine}
+      />
+      <div className="social-links flex-row space-between-lg flex align-center">
+        <span className="link white font-md weight-400 cursor-pointer"><a href="https://t.co/Vskz9PkBBC?amp=1" target="_blank">Discord</a></span>
+        <span className="link white font-md weight-400 cursor-pointer"><a href="https://twitter.com/PhantasiaSports" target="_blank">Twitter</a></span>
+        <img className="w-2" src={phantasia_logo}></img>
+      </div>
+    </div>
   );
 };
 

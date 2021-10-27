@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
         alignContent: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#384457',
+        background: '#212327',
         color: 'white',
         borderRadius: 5,
         fontSize: 10,
