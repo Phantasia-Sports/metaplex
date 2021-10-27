@@ -34,7 +34,7 @@ export const MoreInfoModal: React.FC<MoreInfoModalProps> = ({
     candyMachine
 }) => {
 
-
+console.log(open)
     return (
         <Dialog
             open={open}

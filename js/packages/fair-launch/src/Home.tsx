@@ -16,7 +16,7 @@ import { createStyles, Theme } from '@material-ui/core/styles';
 import { PhaseCountdown } from './countdown';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogContent from '@material-ui/core/DialogContent';
-
+import phantasia_logo from './assets/phantasia.svg';
 import Alert from '@material-ui/lab/Alert';
 
 import * as anchor from '@project-serum/anchor';
@@ -54,7 +54,7 @@ const ConnectButton = styled(WalletDialogButton)`
   color: white;
   font-size: 16px;
   font-weight: bold;
-  cursor:pointer;
+  cursor: pointer;
 `;
 
 const MintContainer = styled.div``; // add your styles here
@@ -68,7 +68,7 @@ const MintButton = styled(Button)`
   color: white;
   font-size: 16px;
   font-weight: bold;
-  cursor:pointer;
+  cursor: pointer;
 `; // add your styles here
 
 const dialogStyles: any = (theme: Theme) =>
@@ -139,7 +139,7 @@ const Header = (props: {
 }) => {
   const { phaseName, desc, date, status } = props;
   return (
-    <div className="flex-row">
+    <div className="flex-row mb-md">
       <div className="flex-col">
         <span className="white weight-500 font-lg">
           Fair Launch Protocol {phaseName}
@@ -168,11 +168,11 @@ function getPhase(
   const phaseTwoEnd = toDate(fairLaunch?.state.data.phaseTwoEnd)?.getTime();
   const candyMachineGoLive = toDate(candyMachine?.state.goLiveDate)?.getTime();
 
-  console.log("Phase 1", phaseOne);
-  console.log("phase 1 end", phaseOneEnd)
-  console.log("phase 2 end", phaseTwoEnd)
-  console.log("Candy machine go live", candyMachineGoLive)
-  console.log("Fair launch data", fairLaunch?.state.data);
+  console.log('Phase 1', phaseOne);
+  console.log('phase 1 end', phaseOneEnd);
+  console.log('phase 2 end', phaseTwoEnd);
+  console.log('Candy machine go live', candyMachineGoLive);
+  console.log('Fair launch data', fairLaunch?.state.data);
   console.log(curr);
 
   if (phaseOne && curr < phaseOne) {
@@ -677,7 +677,7 @@ const Home = (props: HomeProps) => {
               )}
 
               {fairLaunch && (
-                <div className="information-box">
+                <div className="information-box mb-sm">
                   {fairLaunch.ticket.data ? (
                     <>
                       <span className="font-lg white">Your Bid</span>
@@ -972,6 +972,112 @@ const Home = (props: HomeProps) => {
           {alertState.message}
         </Alert>
       </Snackbar>
+      <Dialog
+        open={antiRugPolicyOpen}
+        onClose={() => {
+          setAnitRugPolicyOpen(false);
+        }}
+        PaperProps={{
+          style: { backgroundColor: '#222933', borderRadius: 6 },
+        }}
+      >
+        <MuiDialogContent style={{ padding: 24 }}>
+          {!fairLaunch?.state.data.antiRugSetting && (
+            <span>This Fair Launch has no anti-rug settings.</span>
+          )}
+          {fairLaunch?.state.data.antiRugSetting &&
+            fairLaunch.state.data.antiRugSetting.selfDestructDate && (
+              <div>
+                <h3>Anti-Rug Policy</h3>
+                <p>
+                  This raffle is governed by a smart contract to prevent the
+                  artist from running away with your money.
+                </p>
+                <p>How it works:</p>
+                This project will retain{' '}
+                {fairLaunch.state.data.antiRugSetting.reserveBp / 100}% (◎{' '}
+                {(fairLaunch?.treasury *
+                  fairLaunch.state.data.antiRugSetting.reserveBp) /
+                  (LAMPORTS_PER_SOL * 10000)}
+                ) of the pledged amount in a locked state until all but{' '}
+                {fairLaunch.state.data.antiRugSetting.tokenRequirement.toNumber()}{' '}
+                NFTs (out of up to{' '}
+                {fairLaunch.state.data.numberOfTokens.toNumber()}) have been
+                minted.
+                <p>
+                  If more than{' '}
+                  {fairLaunch.state.data.antiRugSetting.tokenRequirement.toNumber()}{' '}
+                  NFTs remain as of{' '}
+                  {toDate(
+                    fairLaunch.state.data.antiRugSetting.selfDestructDate,
+                  )?.toLocaleDateString()}{' '}
+                  at{' '}
+                  {toDate(
+                    fairLaunch.state.data.antiRugSetting.selfDestructDate,
+                  )?.toLocaleTimeString()}
+                  , you will have the option to get a refund of{' '}
+                  {fairLaunch.state.data.antiRugSetting.reserveBp / 100}% of the
+                  cost of your token.
+                </p>
+                <br></br><br></br>
+                {fairLaunch?.ticket?.data &&
+                  !fairLaunch?.ticket?.data.state.withdrawn && (
+                    <MintButton
+                      onClick={onRugRefund}
+                      variant="contained"
+                      disabled={
+                        !!!fairLaunch.ticket.data ||
+                        !fairLaunch.ticket.data.state.punched ||
+                        Date.now() / 1000 <
+                          fairLaunch.state.data.antiRugSetting.selfDestructDate.toNumber()
+                      }
+                    >
+                      {isMinting ? (
+                        <CircularProgress />
+                      ) : Date.now() / 1000 <
+                        fairLaunch.state.data.antiRugSetting.selfDestructDate.toNumber() ? (
+                        <span>
+                          Refund in...
+                          <Countdown
+                            date={toDate(
+                              fairLaunch.state.data.antiRugSetting
+                                .selfDestructDate,
+                            )}
+                          />
+                        </span>
+                      ) : (
+                        'Refund'
+                      )}
+                      {}
+                    </MintButton>
+                  )}
+                <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                  {fairLaunch?.ticket?.data &&
+                    !fairLaunch?.ticket?.data?.state.punched && (
+                      <small>
+                        You currently have a ticket but it has not been punched
+                        yet, so cannot be refunded.
+                      </small>
+                    )}
+                </div>
+              </div>
+            )}
+        </MuiDialogContent>
+      </Dialog>
+      <MoreInfoModal
+        open={howToOpen}
+        onClose={() => setHowToOpen(false)}
+        setHowToOpen={setHowToOpen}
+        PaperProps={{}}
+        fairLaunch={fairLaunch}
+        candyMachinePredatesFairLaunch={candyMachinePredatesFairLaunch}
+        candyMachine={candyMachine}
+      />
+      <div className="social-links flex-row space-between-lg flex align-center">
+        <span className="link white font-md weight-400 cursor-pointer"><a href="https://t.co/Vskz9PkBBC?amp=1" target="_blank">Discord</a></span>
+        <span className="link white font-md weight-400 cursor-pointer"><a href="https://twitter.com/PhantasiaSports" target="_blank">Twitter</a></span>
+        <img className="w-2" src={phantasia_logo}></img>
+      </div>
     </div>
   );
 };
