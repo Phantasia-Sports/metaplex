@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   TokenInfo,
   TokenListProvider,
@@ -7,7 +7,6 @@ import {
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import {
   Keypair,
-  clusterApiUrl,
   Commitment,
   Connection,
   RpcResponseAndContext,
@@ -19,9 +18,9 @@ import {
   Blockhash,
   FeeCalculator,
 } from '@solana/web3.js';
-import { sleep, useLocalStorageState } from '../utils/utils';
-import { notify } from '../utils/notifications';
-import { ExplorerLink } from '../components/ExplorerLink';
+import { sleep, useLocalStorageState } from '../utils';
+import { notify } from '../utils';
+import { ExplorerLink } from '../components';
 import { useQuerySearch } from '../hooks';
 import { WalletSigner } from './wallet';
 
@@ -51,36 +50,18 @@ export const ENDPOINTS: Array<Endpoint> = [
   {
     name: 'mainnet-beta',
     label: 'mainnet-beta',
-    url: 'https://api.metaplex.solana.com/',
+    url: 'https://phantasia.genesysgo.net',
     chainId: ChainId.MainnetBeta,
-  },
-  {
-    name: 'mainnet-beta-solana',
-    label: 'mainnet-beta (Solana)',
-    url: 'https://api.mainnet-beta.solana.com',
-    chainId: ChainId.MainnetBeta,
-  },
-  {
-    name: 'mainnet-beta-serum',
-    label: 'mainnet-beta (Serum)',
-    url: 'https://solana-api.projectserum.com/',
-    chainId: ChainId.MainnetBeta,
-  },
-  {
-    name: 'testnet',
-    label: 'testnet',
-    url: clusterApiUrl('testnet'),
-    chainId: ChainId.Testnet,
   },
   {
     name: 'devnet',
     label: 'devnet',
-    url: clusterApiUrl('devnet'),
+    url: 'https://psytrbhymqlkfrhudd.dev.genesysgo.net:8899',
     chainId: ChainId.Devnet,
   },
 ];
 
-const DEFAULT_ENDPOINT = ENDPOINTS[0];
+const DEFAULT_ENDPOINT = ENDPOINTS[1];
 
 interface ConnectionConfig {
   connection: Connection;
