@@ -104,6 +104,10 @@ export const mintNFT = async (
     animation_url: metadata.animation_url,
     attributes: metadata.attributes,
     external_url: metadata.external_url,
+    collection: {
+      name: "Battery Pack",
+      family: "Phantasia"
+    },
     properties: {
       ...metadata.properties,
       creators: metadata.creators?.map(creator => {
@@ -238,6 +242,7 @@ export const mintNFT = async (
   realFiles.map(f => data.append('file[]', f));
 
   // TODO: convert to absolute file name for image
+  console.log(data);
 
   const result: IArweaveResult = await uploadToArweave(data);
   progressCallback(6);
