@@ -640,6 +640,7 @@ export async function createAuction(
   creator: StringPublicKey,
   instructions: TransactionInstruction[],
 ) {
+  // settings.tokenMint = 'FANTafPFBAt93BNJVpdu25pGPmca3RfwdsDsRrT3LX1r';
   const auctionProgramId = programIds().auction;
 
   const data = Buffer.from(serialize(AUCTION_SCHEMA, settings));
@@ -654,6 +655,8 @@ export async function createAuction(
       toPublicKey(auctionProgramId),
     )
   )[0];
+
+  console.log('AUCTION KEY: ', auctionKey);
 
   const keys = [
     {
